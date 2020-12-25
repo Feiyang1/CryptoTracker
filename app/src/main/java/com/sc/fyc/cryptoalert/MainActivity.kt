@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -12,7 +13,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sc.fyc.cryptoalert.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -39,6 +40,10 @@ class MainActivity : AppCompatActivity() {
             signOut()
         }
 
+        binding.addButton.setOnClickListener {
+            showAddDialog()
+        }
+
         alertsAdapter = AlertAdapter(this, alerts)
         binding.alerts.adapter = alertsAdapter
         binding.alerts.setHasFixedSize(true)
@@ -57,6 +62,11 @@ class MainActivity : AppCompatActivity() {
         if (currentUser != null) {
             getAlerts(currentUser.uid)
         }
+    }
+
+    private fun showAddDialog() {
+        val dialog = AddDialogFragment()
+        dialog.show(supportFragmentManager, "AddDialogFragment")
     }
 
     private fun updateUI(user: FirebaseUser?) {
@@ -124,5 +134,13 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener{ exception ->
                 Log.w("TAG", "Error getting documents: ", exception)
             }
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        // User touched the dialog's positive button
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        // User touched the dialog's negative button
     }
 }
