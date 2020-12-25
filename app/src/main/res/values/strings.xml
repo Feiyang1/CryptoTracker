@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CryptoAlert</string>
+    <string name="sign_out">sign out</string>
+    <string name="sign_in">Sign in</string>
+</resources>

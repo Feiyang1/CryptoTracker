@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "144012929049",
+    "project_id": "crypto-alert-4e8c9",
+    "storage_bucket": "crypto-alert-4e8c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144012929049:android:98e18e4e3dcf9748322288",
+        "android_client_info": {
+          "package_name": "com.sc.fyc.cryptoalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144012929049-12833n32r3epf4o34j7kv4v3vco3sji2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk7IiuXQwCxK0C2_GFIxJAakcT4Vopl9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144012929049-12833n32r3epf4o34j7kv4v3vco3sji2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
