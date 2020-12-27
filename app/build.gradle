@@ -55,4 +55,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.amitshekhar.android:android-networking:1.0.2'
 }

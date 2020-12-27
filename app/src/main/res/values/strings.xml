@@ -4,4 +4,6 @@
     <string name="sign_in">Sign in</string>
     <string name="add">Add</string>
     <string name="cancel">cancel</string>
+    <string name="above">above</string>
+    <string name="below">below</string>
 </resources>

@@ -5,40 +5,108 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.View
+import android.widget.EditText
+import android.widget.RadioGroup
+import android.widget.SearchView
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.RecyclerView
+import com.androidnetworking.AndroidNetworking
+import com.androidnetworking.error.ANError
+import com.androidnetworking.interfaces.JSONObjectRequestListener
+import org.json.JSONObject
 
 class AddDialogFragment : DialogFragment() {
     internal lateinit var listener: AddDialogListener
+    var symbolSearchResult: MutableList<SymbolSearchResult> = mutableListOf(SymbolSearchResult("BTC", 25000.0), SymbolSearchResult("LTC", 100.0))
+
     interface AddDialogListener {
         fun onDialogPositiveClick(dialog: DialogFragment)
         fun onDialogNegativeClick(dialog: DialogFragment)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
-            // Use the Builder class for convenient dialog construction
-            val builder = AlertDialog.Builder(it)
-            val inflater = requireActivity().layoutInflater
+        // Use the Builder class for convenient dialog construction
+        val builder = AlertDialog.Builder(activity)
+        val inflater = requireActivity().layoutInflater
 
-            builder.setView(inflater.inflate(R.layout.add_dialog, null))
-                .setPositiveButton(R.string.add,
-                    DialogInterface.OnClickListener { dialog, id ->
-                        // FIRE ZE MISSILES!
-                    })
-                .setNegativeButton(R.string.cancel,
-                    DialogInterface.OnClickListener { dialog, id ->
-                        // User cancelled the dialog
-                    })
-            // Create the AlertDialog object and return it
-            builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
+        val view = inflater.inflate(R.layout.add_dialog, null)
+        builder.setView(view)
+            .setPositiveButton(R.string.add,
+                DialogInterface.OnClickListener { dialog, id ->
+                    // FIRE ZE MISSILES!
+                })
+            .setNegativeButton(R.string.cancel,
+                DialogInterface.OnClickListener { dialog, id ->
+                    // User cancelled the dialog
+                })
+
+        val symbol = view.findViewById<EditText>(R.id.symbol)
+        val priceInput = view.findViewById<EditText>(R.id.price)
+        val typeInput = view.findViewById<RadioGroup>(R.id.below_above)
+        val search = view.findViewById<SearchView>(R.id.symbol_searchbox)
+        val symbol_result = view.findViewById<RecyclerView>(R.id.symbol_search_result)
+
+        val symbolAdapter = activity?.let { SymbolAdapter(it, symbolSearchResult) }
+        symbol_result.adapter = symbolAdapter
+        symbol_result.setHasFixedSize(true)
+
+        // hide search result until search view is activated
+        symbol_result.visibility = View.GONE
+
+        search.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                println("onQueryTextSubmit - $query")
+                AndroidNetworking.get("https://api.coincap.io/v2/assets").addQueryParameter("search", query).build().getAsJSONObject(object: JSONObjectRequestListener {
+                    override fun onResponse(response: JSONObject?) {
+                        if(response != null) {
+                            val searchResults = response.optJSONArray("data")?.let {0.until(it.length()).map{i -> it.optJSONObject(i)}}?.map{ SymbolSearchResultRemote(it.toString())}?.map{SymbolSearchResult(it)}
+                            symbolSearchResult.clear()
+
+                            if (searchResults != null) {
+                                symbolSearchResult.addAll(searchResults)
+                            }
+                        }
+                        symbolAdapter?.notifyDataSetChanged()
+                        println("response is $response")
+                    }
+
+                    override fun onError(anError: ANError?) {
+                        println("Error is $anError")
+                    }
+                })
+                symbol_result.visibility = View.VISIBLE;
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                println("onQueryTextChange")
+                return false
+            }
+        })
+/* curl --location --request GET 'https://api.coincap.io/v2/assets'
+
+        search.setOnSuggestionListener(object: SearchView.OnSuggestionListener {
+            override fun onSuggestionClick(position: Int): Boolean {
+                println("onSuggestionClick - $position")
+                return false
+            }
+
+            override fun onSuggestionSelect(position: Int): Boolean {
+                println("onSuggestionSelect - $position")
+                return false
+            }
+        }) */
+
+        // Create the AlertDialog object and return it
+        return builder.create()
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         try {
-            listener = context as AddDialogListener
+            listener = context as AddDialogFragment.AddDialogListener
         } catch (e: ClassCastException) {
             // The activity doesn't implement the interface, throw exception
             throw ClassCastException((context.toString() +
