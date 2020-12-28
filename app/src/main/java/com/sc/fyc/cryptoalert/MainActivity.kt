@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
 import com.androidnetworking.AndroidNetworking
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
 
         updateUI(currentUser)
         if (currentUser != null) {
-            getAlerts(currentUser.uid)
+            listenToAlerts(currentUser.uid)
         }
     }
 
@@ -94,7 +93,7 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
                         val user = auth.currentUser
 
                         if (user != null) {
-                            getAlerts(user.uid)
+                            listenToAlerts(user.uid)
                         }
 
                         updateUI(user)
@@ -117,35 +116,41 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
         alertsAdapter.notifyDataSetChanged()
     }
 
-    private fun getAlerts(userId: String) {
-        firestore.collection("alerts").whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener { documents ->
-
-                // there should be only 1 document per user
-                documents.map { document ->
-                    Log.w("TAG", "got data: $document.data")
-
-                    val data = document.toObject<RemoteAlertDoc>(RemoteAlertDoc::class.java)
-                    alerts.clear()
-                    alerts.addAll(data.alerts)
-                    alertsAdapter.notifyDataSetChanged()
-                    for(al in alerts) {
-                        Log.w("TAG", "datatatatatatata: ${al.symbol} - ${al.price}")
-                    }
-                }
-
+    private fun listenToAlerts(userId: String) {
+        firestore.collection("users/$userId/alerts").addSnapshotListener{snapshot, e ->
+            if (e != null) {
+                Log.w("TAG", "Error listening to snapshot ", e)
             }
-            .addOnFailureListener{ exception ->
-                Log.w("TAG", "Error getting documents: ", exception)
+
+            alerts.clear()
+            for (document in snapshot!!) {
+                val alert = document.toObject<Alert>(Alert::class.java)
+                alerts.add(alert)
             }
+
+            for(al in alerts) {
+                Log.w("TAG", "datatatatatatata: ${al.symbol} - ${al.price}")
+            }
+            alertsAdapter.notifyDataSetChanged()
+        }
     }
 
-    override fun onDialogPositiveClick(dialog: DialogFragment) {
+    private fun addAlert(userId: String, alert: Alert) {
+        firestore.collection("users/$userId/alerts").add(alert)
+    }
+
+    override fun onDialogPositiveClick(alert: Alert) {
         // User touched the dialog's positive button
+        println("Add new alert, ${alert.price}, ${alert.symbol}, ${alert.type}")
+
+        val currentUser = auth.currentUser
+        if(currentUser != null) {
+            addAlert(currentUser.uid, alert)
+
+        }
     }
 
-    override fun onDialogNegativeClick(dialog: DialogFragment) {
+    override fun onDialogNegativeClick() {
         // User touched the dialog's negative button
     }
 }

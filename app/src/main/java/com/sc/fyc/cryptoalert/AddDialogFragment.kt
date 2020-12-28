@@ -19,28 +19,16 @@ class AddDialogFragment : DialogFragment() {
     var symbolSearchResult: MutableList<SymbolSearchResult> = mutableListOf(SymbolSearchResult("BTC", 25000.0), SymbolSearchResult("LTC", 100.0))
 
     interface AddDialogListener {
-        fun onDialogPositiveClick(dialog: DialogFragment)
-        fun onDialogNegativeClick(dialog: DialogFragment)
+        fun onDialogPositiveClick(alert: Alert)
+        fun onDialogNegativeClick()
     }
-
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the Builder class for convenient dialog construction
         val builder = AlertDialog.Builder(activity)
         val inflater = requireActivity().layoutInflater
-
         val view = inflater.inflate(R.layout.add_dialog, null)
-        builder.setView(view)
-            .setPositiveButton(R.string.add,
-                DialogInterface.OnClickListener { dialog, id ->
-                    // FIRE ZE MISSILES!
-                })
-            .setNegativeButton(R.string.cancel,
-                DialogInterface.OnClickListener { dialog, id ->
-                    // User cancelled the dialog
-                })
-
         val symbol = view.findViewById<TextView>(R.id.symbol)
         val currentPrice = view.findViewById<TextView>(R.id.current_price)
         val priceInput = view.findViewById<EditText>(R.id.price)
@@ -48,6 +36,27 @@ class AddDialogFragment : DialogFragment() {
         val search = view.findViewById<SearchView>(R.id.symbol_searchbox)
         val symbol_result = view.findViewById<RecyclerView>(R.id.symbol_search_result)
         val allAlertContent = view.findViewById<LinearLayout>(R.id.alert_content)
+
+        builder.setView(view)
+            .setPositiveButton(R.string.add,
+                DialogInterface.OnClickListener { dialog, id ->
+
+                    val selectedSymbol = symbol.text.toString()
+                    val selectedTypeId = typeInput.checkedRadioButtonId
+                    val selectedPriceString = priceInput.text.toString()
+
+                    // make sure all required inputs are set
+                    if (selectedPriceString != "" && selectedTypeId != -1 && selectedSymbol != "") {
+                        val selectedPrice = selectedPriceString.toDouble()
+                        val selectedType = view.findViewById<RadioButton>(selectedTypeId).text.toString()
+                        listener.onDialogPositiveClick(Alert(selectedSymbol, selectedPrice, selectedType, false))
+                    }
+                })
+            .setNegativeButton(R.string.cancel,
+                DialogInterface.OnClickListener { dialog, id ->
+                    listener.onDialogNegativeClick()
+                    dialog.cancel()
+                })
 
         val symbolAdapter = activity?.let { SymbolAdapter(it, symbolSearchResult) { selected ->
                 symbol.text = selected.symbol
@@ -112,6 +121,4 @@ class AddDialogFragment : DialogFragment() {
                     " must implement NoticeDialogListener"))
         }
     }
-
-
 }
