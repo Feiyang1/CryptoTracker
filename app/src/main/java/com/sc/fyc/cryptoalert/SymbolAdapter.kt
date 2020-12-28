@@ -8,11 +8,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class SymbolAdapter (private val context: Context, private val dataset: List<SymbolSearchResult>): RecyclerView.Adapter<SymbolAdapter.ItemViewHolder>() {
+class SymbolAdapter (private val context: Context, private val dataset: List<SymbolSearchResult>, private val itemClickListener: (SymbolSearchResult) -> Unit): RecyclerView.Adapter<SymbolAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
         val symbolView: TextView = view.findViewById(R.id.symbol_search_name)
         val priceView: TextView = view.findViewById(R.id.symbol_search_price)
+
+        fun bind(item: SymbolSearchResult) {
+            symbolView.text = item.symbol
+            priceView.text = item.price.toString()
+
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -24,7 +30,7 @@ class SymbolAdapter (private val context: Context, private val dataset: List<Sym
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = dataset[position]
-        holder.symbolView.text = item.symbol
-        holder.priceView.text = item.price.toString()
+        holder.bind(item)
+        holder.itemView.setOnClickListener { itemClickListener(item)}
     }
 }

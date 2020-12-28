@@ -24,58 +24,65 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
     </LinearLayout>
 
-
     <LinearLayout
-        android:id="@+id/symbol_price"
+        android:id="@+id/alert_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/symbol_search">
-        <EditText
-            android:id="@+id/symbol"
-            android:layout_width="wrap_content"
+        android:layout_below="@id/symbol_search"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/symbol_price"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            tools:text="Name" />
+           >
+            <TextView
+                android:id="@+id/symbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                tools:text="Name" />
 
-        <EditText
-            android:id="@+id/price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:layout_toRightOf="@+id/symbol"
-            tools:text="1234" />
-    </LinearLayout>
+            <EditText
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:layout_toRightOf="@+id/symbol"
+                tools:text="1234" />
+        </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/below_above"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@+id/symbol_price">
-        <RadioButton
+        <RadioGroup
+            android:id="@+id/below_above"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/above"/>
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/below"/>
-    </RadioGroup>
+            android:orientation="horizontal"
+            android:layout_below="@+id/symbol_price">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/above"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/below"/>
+        </RadioGroup>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/below_above">
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="current price:"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="12345"/>
+            android:layout_below="@+id/below_above">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="current price:"/>
+            <TextView
+                android:id="@+id/current_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="12345"/>
+        </LinearLayout>
     </LinearLayout>
 
 

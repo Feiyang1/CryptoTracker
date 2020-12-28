@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import android.widget.RadioGroup
-import android.widget.SearchView
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.androidnetworking.AndroidNetworking
@@ -24,6 +22,8 @@ class AddDialogFragment : DialogFragment() {
         fun onDialogPositiveClick(dialog: DialogFragment)
         fun onDialogNegativeClick(dialog: DialogFragment)
     }
+
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the Builder class for convenient dialog construction
@@ -41,13 +41,23 @@ class AddDialogFragment : DialogFragment() {
                     // User cancelled the dialog
                 })
 
-        val symbol = view.findViewById<EditText>(R.id.symbol)
+        val symbol = view.findViewById<TextView>(R.id.symbol)
+        val currentPrice = view.findViewById<TextView>(R.id.current_price)
         val priceInput = view.findViewById<EditText>(R.id.price)
         val typeInput = view.findViewById<RadioGroup>(R.id.below_above)
         val search = view.findViewById<SearchView>(R.id.symbol_searchbox)
         val symbol_result = view.findViewById<RecyclerView>(R.id.symbol_search_result)
+        val allAlertContent = view.findViewById<LinearLayout>(R.id.alert_content)
 
-        val symbolAdapter = activity?.let { SymbolAdapter(it, symbolSearchResult) }
+        val symbolAdapter = activity?.let { SymbolAdapter(it, symbolSearchResult) { selected ->
+                symbol.text = selected.symbol
+                currentPrice.text = selected.price.toString()
+
+                // hide search view and show alert creation view
+                symbol_result.visibility = View.GONE
+                allAlertContent.visibility = View.VISIBLE
+            }
+        }
         symbol_result.adapter = symbolAdapter
         symbol_result.setHasFixedSize(true)
 
@@ -75,7 +85,10 @@ class AddDialogFragment : DialogFragment() {
                         println("Error is $anError")
                     }
                 })
-                symbol_result.visibility = View.VISIBLE;
+                symbol_result.visibility = View.VISIBLE
+                // hide alert creation inputs when searching
+                allAlertContent.visibility = View.GONE
+
                 return false
             }
 
@@ -84,20 +97,6 @@ class AddDialogFragment : DialogFragment() {
                 return false
             }
         })
-/* curl --location --request GET 'https://api.coincap.io/v2/assets'
-
-        search.setOnSuggestionListener(object: SearchView.OnSuggestionListener {
-            override fun onSuggestionClick(position: Int): Boolean {
-                println("onSuggestionClick - $position")
-                return false
-            }
-
-            override fun onSuggestionSelect(position: Int): Boolean {
-                println("onSuggestionSelect - $position")
-                return false
-            }
-        }) */
-
         // Create the AlertDialog object and return it
         return builder.create()
     }
@@ -113,4 +112,6 @@ class AddDialogFragment : DialogFragment() {
                     " must implement NoticeDialogListener"))
         }
     }
+
+
 }
