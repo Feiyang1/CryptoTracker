@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
 
     override fun onDialogPositiveClick(alert: Alert) {
         // User touched the dialog's positive button
-        println("Add new alert, ${alert.price}, ${alert.symbol}, ${alert.type}")
+        println("Add new alert, ${alert.price} ${alert.id}, ${alert.symbol}, ${alert.type}")
 
         val currentUser = auth.currentUser
         if(currentUser != null) {

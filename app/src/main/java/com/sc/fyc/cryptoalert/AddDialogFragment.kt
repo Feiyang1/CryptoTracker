@@ -16,7 +16,8 @@ import org.json.JSONObject
 
 class AddDialogFragment : DialogFragment() {
     internal lateinit var listener: AddDialogListener
-    var symbolSearchResult: MutableList<SymbolSearchResult> = mutableListOf(SymbolSearchResult("BTC", 25000.0), SymbolSearchResult("LTC", 100.0))
+    var symbolSearchResult: MutableList<SymbolSearchResult> = mutableListOf()
+    lateinit var selectedSymbolId: String
 
     interface AddDialogListener {
         fun onDialogPositiveClick(alert: Alert)
@@ -49,7 +50,7 @@ class AddDialogFragment : DialogFragment() {
                     if (selectedPriceString != "" && selectedTypeId != -1 && selectedSymbol != "") {
                         val selectedPrice = selectedPriceString.toDouble()
                         val selectedType = view.findViewById<RadioButton>(selectedTypeId).text.toString()
-                        listener.onDialogPositiveClick(Alert(selectedSymbol, selectedPrice, selectedType, false))
+                        listener.onDialogPositiveClick(Alert(selectedSymbol, selectedSymbolId, selectedPrice, selectedType, false))
                     }
                 })
             .setNegativeButton(R.string.cancel,
@@ -61,6 +62,7 @@ class AddDialogFragment : DialogFragment() {
         val symbolAdapter = activity?.let { SymbolAdapter(it, symbolSearchResult) { selected ->
                 symbol.text = selected.symbol
                 currentPrice.text = selected.price.toString()
+                selectedSymbolId = selected.id
 
                 // hide search view and show alert creation view
                 symbol_result.visibility = View.GONE
