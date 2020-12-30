@@ -3,6 +3,7 @@ package com.sc.fyc.cryptoalert
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.androidnetworking.AndroidNetworking
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var binding: ActivityMainBinding
     private val alerts: MutableList<Alert> = mutableListOf()
+    private val filteredAlerts: MutableList<Alert> = mutableListOf()
+    private var filter: AlertState = AlertState.ACTIVE
     private lateinit var alertsAdapter: AlertAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +51,29 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
             showAddDialog()
         }
 
-        alertsAdapter = AlertAdapter(this, alerts)
+        // select "active" by default
+        binding.triggeredFilter.check(R.id.alert_active)
+        binding.triggeredFilter.setOnCheckedChangeListener { group, checkedId ->
+
+            val nextFilteredAlerts = when(findViewById<RadioButton>(checkedId)?.text.toString()) {
+                "active" -> {
+                    filter = AlertState.ACTIVE
+                    filterAlerts(AlertState.ACTIVE)
+                }
+                "triggered" -> {
+                    filter = AlertState.TRIGGERED
+                    filterAlerts(AlertState.TRIGGERED)
+                }
+                else -> throw Error("impossible filter value")
+            }
+
+            // update UI
+            filteredAlerts.clear()
+            filteredAlerts.addAll(nextFilteredAlerts)
+            alertsAdapter.notifyDataSetChanged()
+        }
+
+        alertsAdapter = AlertAdapter(this, filteredAlerts)
         binding.alerts.adapter = alertsAdapter
         binding.alerts.setHasFixedSize(true)
 
@@ -65,6 +90,15 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
         updateUI(currentUser)
         if (currentUser != null) {
             listenToAlerts(currentUser.uid)
+        }
+    }
+
+    private fun filterAlerts(filter: AlertState): List<Alert> {
+        return alerts.filter { alert ->
+            when(filter) {
+                AlertState.ACTIVE -> !alert.triggered
+                else -> alert.triggered
+            }
         }
     }
 
@@ -123,6 +157,7 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
             }
 
             alerts.clear()
+            filteredAlerts.clear()
             for (document in snapshot!!) {
                 val alert = document.toObject<Alert>(Alert::class.java)
                 alerts.add(alert)
@@ -131,6 +166,7 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
             for(al in alerts) {
                 Log.w("TAG", "datatatatatatata: ${al.symbol} - ${al.price}")
             }
+            filteredAlerts.addAll(filterAlerts(filter))
             alertsAdapter.notifyDataSetChanged()
         }
     }
@@ -153,4 +189,8 @@ class MainActivity : AppCompatActivity(), AddDialogFragment.AddDialogListener {
     override fun onDialogNegativeClick() {
         // User touched the dialog's negative button
     }
+}
+
+enum class AlertState {
+    ACTIVE, TRIGGERED
 }

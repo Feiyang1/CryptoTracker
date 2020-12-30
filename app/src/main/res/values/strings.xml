@@ -6,4 +6,6 @@
     <string name="cancel">cancel</string>
     <string name="above">above</string>
     <string name="below">below</string>
+    <string name="active">active</string>
+    <string name="triggered">triggered</string>
 </resources>
