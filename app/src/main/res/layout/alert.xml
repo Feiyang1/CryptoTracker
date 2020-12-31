@@ -26,5 +26,27 @@
             android:layout_alignParentEnd="true"
             tools:text="12345"/>
 
+        <LinearLayout
+            android:id="@+id/triggered_time_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/symbol"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/triggered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:text="@string/triggered_at"/>
+
+            <TextView
+                android:id="@+id/triggered_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:text="12345"/>
+        </LinearLayout>
+
+
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

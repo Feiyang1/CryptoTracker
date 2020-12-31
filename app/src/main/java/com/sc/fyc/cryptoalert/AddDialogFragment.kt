@@ -50,7 +50,7 @@ class AddDialogFragment : DialogFragment() {
                     if (selectedPriceString != "" && selectedTypeId != -1 && selectedSymbol != "") {
                         val selectedPrice = selectedPriceString.toDouble()
                         val selectedType = view.findViewById<RadioButton>(selectedTypeId).text.toString()
-                        listener.onDialogPositiveClick(Alert(selectedSymbol, selectedSymbolId, selectedPrice, selectedType, false))
+                        listener.onDialogPositiveClick(Alert(selectedSymbol, selectedSymbolId, selectedPrice, selectedType, false, null))
                     }
                 })
             .setNegativeButton(R.string.cancel,

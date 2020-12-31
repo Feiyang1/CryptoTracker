@@ -8,4 +8,5 @@
     <string name="below">below</string>
     <string name="active">active</string>
     <string name="triggered">triggered</string>
+    <string name="triggered_at">triggered at:</string>
 </resources>

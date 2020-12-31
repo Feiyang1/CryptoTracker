@@ -81,6 +81,7 @@ function sendAlert(alert: Alert, currentPrice: number): void {
 function updateTriggered(alert: Alert): Promise<firebase.firestore.WriteResult> {
     return alert.docRef.update({
         triggered: true,
+        triggered_timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
 }
 
